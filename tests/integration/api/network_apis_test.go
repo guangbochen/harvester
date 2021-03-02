@@ -72,7 +72,7 @@ var _ = Describe("verify network APIs", func() {
 
 	BeforeEach(func() {
 		scaled = harvester.Scaled()
-		vmBuilder = NewDefaultTestVMBuilder()
+		vmBuilder = NewDefaultTestVMBuilder(testResourceLabels)
 		vmNamespace = testVMNamespace
 		vmController = scaled.VirtFactory.Kubevirt().V1().VirtualMachine()
 		nadController = scaled.CniFactory.K8s().V1().NetworkAttachmentDefinition()

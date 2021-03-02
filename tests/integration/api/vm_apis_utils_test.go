@@ -16,6 +16,7 @@ import (
 	cdiv1alpha1 "kubevirt.io/containerized-data-importer/pkg/apis/core/v1alpha1"
 
 	"github.com/rancher/harvester/pkg/util"
+	"github.com/rancher/harvester/tests/framework/env"
 	"github.com/rancher/harvester/tests/framework/fuzz"
 )
 
@@ -152,11 +153,11 @@ func NewVMBuilder(vm *kubevirtv1.VirtualMachine) *VMBuilder {
 	}
 }
 
-func NewDefaultTestVMBuilder() *VMBuilder {
+func NewDefaultTestVMBuilder(labels map[string]string) *VMBuilder {
 	objectMeta := metav1.ObjectMeta{
 		Namespace:    testVMNamespace,
 		GenerateName: testVMGenerateName,
-		Labels:       testResourceLabels,
+		Labels:       labels,
 	}
 	running := pointer.BoolPtr(false)
 	cpu := &kubevirtv1.CPU{
@@ -281,6 +282,11 @@ func (v *VMBuilder) DataVolume(diskName, storageSize string, sourceHTTPURL ...st
 			},
 		},
 	}
+	if env.IsE2ETestsEnabled() {
+		*dataVolumeTemplate.Spec.PVC.StorageClassName = "longhorn"
+		*dataVolumeTemplate.Spec.PVC.VolumeMode = corev1.PersistentVolumeBlock
+	}
+
 	dataVolumeTemplates = append(dataVolumeTemplates, dataVolumeTemplate)
 	v.vm.Spec.DataVolumeTemplates = dataVolumeTemplates
 	// Disks
