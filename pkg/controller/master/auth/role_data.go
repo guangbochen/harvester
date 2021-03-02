@@ -135,6 +135,14 @@ func BootstrapAdmin(mgmt *config.Management, namespace string) error {
 		ObjectMeta: v1.ObjectMeta{
 			Name:      bootstrapAdminConfig,
 			Namespace: namespace,
+			OwnerReferences: []v1.OwnerReference{
+				{
+					APIVersion: v1alpha1.SchemeGroupVersion.String(),
+					Kind:       "User",
+					Name:       users.Items[0].Name,
+					UID:        users.Items[0].UID,
+				},
+			},
 		},
 	}
 

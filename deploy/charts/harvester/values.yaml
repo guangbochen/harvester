@@ -32,7 +32,7 @@ kubevirt-operator:
     operator:
       image:
         repository: quay.io/kubevirt/virt-operator
-        tag: &kubevirtVersion v0.37.2
+        tag: &kubevirtVersion v0.38.1
     ## The following four images are placeholder for images in use.
     ## They are not used by the kubevirt-operator chart.
     controller:
@@ -460,6 +460,14 @@ multus:
   ## Specify multus-cni daemonSet extra arguments
   args:
     - "--multus-kubeconfig-file-host=/var/lib/rancher/k3s/agent/etc/cni/net.d/multus.d/multus.kubeconfig"
+
+csi-snapshotter:
+  ## Specify whether to install the csi-snapshotter
+  enabled: true
+
+  image:
+    repository: k8s.gcr.io/sig-storage/snapshot-controller
+    tag: v4.0.0
 
 longhorn:
   ## Specify whether to install longhorn,

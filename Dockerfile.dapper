@@ -40,7 +40,7 @@ RUN if [ "${ARCH}" = "amd64" ]; then \
     fi
 ## install controller-gen
 RUN if [ "${ARCH}" = "amd64" ]; then \
-        GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.4.1; \
+        GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.5.0; \
     fi
 ## install ginkgo
 RUN if [ "${ARCH}" = "amd64" ]; then \
