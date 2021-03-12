@@ -158,9 +158,11 @@ func (h *Handler) createContent(vmBackup *harvesterapiv1.VirtualMachineBackup, v
 			Name:       &volumeBackupName,
 			VolumeName: volumeName,
 			PersistentVolumeClaim: harvesterapiv1.PersistentVolumeClaimSpec{
-				Name:      pvc.ObjectMeta.Name,
-				Namespace: pvc.ObjectMeta.Namespace,
-				Spec:      pvc.Spec,
+				Name:        pvc.ObjectMeta.Name,
+				Namespace:   pvc.ObjectMeta.Namespace,
+				Labels:      pvc.Labels,
+				Annotations: pvc.Annotations,
+				Spec:        pvc.Spec,
 			},
 		}
 
@@ -263,21 +265,19 @@ func (h *Handler) updateStatus(vmBackup *harvesterapiv1.VirtualMachineBackup, so
 		updateBackupCondition(vmBackupCpy, newReadyCondition(corev1.ConditionUnknown, "Unknown state"))
 	}
 
-	if vmBackup.Annotations == nil {
-		vmBackup.Annotations = make(map[string]string)
+	if vmBackupCpy.Annotations == nil {
+		vmBackupCpy.Annotations = make(map[string]string)
 	}
 
-	if vmBackup.Annotations[backupTargetAnnotation] == "" {
+	if vmBackupCpy.Annotations[backupTargetAnnotation] == "" {
 		target, err := h.longhornSettingCache.Get(LonghornSystemNameSpace, longhornBackupTargetSettingName)
-		if err != nil && !apierrors.IsNotFound(err) {
+		if err != nil {
 			return err
 		}
-		if target != nil && target.Value != "" {
-			vmBackup.Annotations[backupTargetAnnotation] = target.Value
-		}
+		vmBackupCpy.Annotations[backupTargetAnnotation] = target.Value
 	}
 
-	if !reflect.DeepEqual(vmBackupCpy, vmBackup) {
+	if !reflect.DeepEqual(vmBackup, vmBackupCpy) {
 		if vmBackupCpy.Status != nil {
 			if _, err := h.vmBackups.Update(vmBackupCpy); err != nil {
 				return err
